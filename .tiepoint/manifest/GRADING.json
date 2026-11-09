@@ -180,7 +180,7 @@
             "criterion": "Contract grading must derive and verify its scope and ephemeral parser evidence from the compiled manifest, working tree, and Git diff without a database, network request, model client, or persisted grade record.",
             "links": [
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -408,7 +408,7 @@
             "criterion": "The Tiepoint skill's grading reference must direct the host agent to read and judge every scoped artifact, print every judgment before verification, cite only exact emitted symbols, treat unsupported as useful evidence, and keep independent grading read-only; during implementation the host must investigate findings, record fixed, rejected-with-evidence, or unresolved dispositions, and regrade affected claims after corrections within a bounded loop.",
             "links": [
               {
-                "compiled_content_hash": "46d377db0c76d343a77b35d0caa1a0f01a5ae2ed802325e0f2704afd8671e17b",
+                "compiled_content_hash": "c267c47fba349d0d0cda99cc4de7f46318871d65cf8109bd7423cc7b4688696f",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {

@@ -32,6 +32,22 @@ The equivalent read-only MCP tools are `get_asset_intent_context` and
 manifest without Postgres, embeddings, or network access. Results include the stable repository
 key and a content-derived `manifest_digest` for the reviewed contract that answered.
 
+Both modes also return `authored_inputs: { status, detail }`. `status` is `current`
+when published YAML input paths and hashes match the configured spec directory,
+`stale` for changed, added, or removed inputs, and `unknown` when safe inspection
+cannot finish. The read stays on the published manifest and never compiles or
+publishes. Even `no_criteria` or `not_found` may accompany stale authored inputs:
+inspect current YAML before concluding that no rule applies. Code/test freshness
+is reported separately; matching YAML bytes prove neither semantic support nor
+test execution. Inspection is bounded to 32 directory levels, 4,096 entries,
+1,024 YAML files, 2 MiB per file, and 16 MiB total; exceeding a limit is `unknown`.
+`tiepoint status --json` exposes the same diagnostic under `contract.authored_inputs`
+and directs pending post-merge publication to its configured publisher.
+Status identifies its counts with `contract.counts_source`: normally `authored`,
+or `published_manifest` when invalid or uninspectable YAML prevents current counts.
+It preserves validation failure details and uses `unavailable` when neither source
+can supply counts. A stale publication is recovery work rather than onboarding.
+
 Asset context returns `has_context`, `no_criteria`, or `not_found`. A selector-qualified query
 includes exact-selector and file-level claims while excluding claims for other selectors in the
 same file; a path-only query keeps every claim's full kind, repository, path, selector, and

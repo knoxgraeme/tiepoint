@@ -3,6 +3,8 @@ import {
   mkdirSync,
   mkdtempSync,
   rmSync,
+  readFileSync,
+  renameSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -15,6 +17,7 @@ import {
 } from "../../../src/contract/intent-context.js";
 import { renderIntentContextText } from "../../../src/commands/contract-context.js";
 import { escapeTerminalText } from "../../../src/commands/shared.js";
+import { tiepointConfigJson } from "../../support/fixtures.js";
 
 const terminalInjection =
   "CSI:\u001b[31m OSC:\u001b]0;owned\u0007 CR:\r BS:\b C1:\u009b BIDI:\u202e";
@@ -453,6 +456,31 @@ capability:
   );
   assert.equal(JSON.parse(output).status, "not_found");
   assert.match(JSON.parse(output).answer, /Check the stable ID and manifest workspace/);
+
+  const specPath = resolve(contextRoot, ".tiepoint/spec/context.yaml");
+  writeFileSync(specPath, `${readFileSync(specPath, "utf8")}\n# unpublished edit\n`);
+  output = "";
+  await runCli(["contract", "context", "--repository", contextRoot, "--path", "src/unlinked.ts"], io, {});
+  assert.match(output, /Intent context: no_criteria/);
+  assert.match(output, /authored inputs: stale/);
+  assert.match(output, /negative lookup does not establish that no rule exists/);
+
+  // Configured spec directories must reach the domain reader through the CLI.
+  renameSync(resolve(contextRoot, ".tiepoint/spec"), resolve(contextRoot, ".tiepoint/custom-spec"));
+  writeFileSync(resolve(contextRoot, ".tiepoint/config.json"), tiepointConfigJson({
+    name: "Context", repoName: "context-command-test", specDirectory: "custom-spec",
+  }));
+  writeFileSync(resolve(contextRoot, "src/missing.ts"), "export const missing = true;\n");
+  await runCli(["contract", "compile", contextRoot], io, {});
+  output = "";
+  await runCli(["contract", "context", "--repository", contextRoot, "--ac", "CONTEXT-001-AC1", "--json"], io, {});
+  assert.equal(JSON.parse(output).authored_inputs.status, "current");
+
+  writeFileSync(resolve(contextRoot, ".tiepoint/custom-spec/untrusted-\u001b[31m.yaml"), "x".repeat(2 * 1024 * 1024 + 1));
+  output = "";
+  await runCli(["status", contextRoot], io, {});
+  assert.doesNotMatch(output, unsafeTerminalCodePoint, "repository-controlled freshness details must be inert in status output");
+  assert.match(output, /untrusted-\\x1b\[31m\.yaml/);
 
   const missingManifestRoot = resolve(root, "missing-manifest");
   mkdirSync(missingManifestRoot, { recursive: true });

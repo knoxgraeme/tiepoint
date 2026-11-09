@@ -696,6 +696,54 @@ capability:
                 repository: tieline
                 path: tests/unit/contract/test-impact.ts
                 framework_hint: custom-script
+        - key: CONTRACT-003-AC6
+          criterion: Exact intent context and workspace status must disclose whether published authored-input paths and hashes match current configured YAML as current, stale, or unknown, without compiling, publishing, or replacing the published context and without conflating input freshness with linked evidence assurance or semantic review.
+          rationale: Post-merge checks can validate current YAML while later planning reads still use an older publication, including negative lookups that omit newly authored criteria.
+          scenarios:
+            - given: authored YAML has changed or a spec file was added or removed after publication
+              when: exact asset or criterion context is read, including a negative result
+              then: the published neighborhood and digest must remain unchanged while authored input freshness is stale and current-YAML inspection is advised
+            - given: authored inputs cannot be inspected safely within file, byte, entry, or depth limits
+              when: published context is read
+              then: authored input freshness must be unknown rather than current and the published result must remain available
+            - given: post-merge publication is pending
+              when: workspace status is read
+              then: it must direct maintainers to the configured publisher and current YAML without claiming that a publisher is installed or healthy
+          links:
+            - relation: implements
+              provenance: authored
+              target:
+                kind: code
+                repository: tieline
+                path: src/contract/manifest-input-freshness.ts
+                selector: function:inspectManifestInputFreshness
+            - relation: implements
+              provenance: authored
+              target:
+                kind: code
+                repository: tieline
+                path: src/contract/intent-context.ts
+            - relation: implements
+              provenance: authored
+              target:
+                kind: code
+                repository: tieline
+                path: src/tiepoint/status.ts
+                selector: function:getTiepointStatus
+            - relation: tests
+              provenance: authored
+              target:
+                kind: test
+                repository: tieline
+                path: tests/unit/contract/test-intent-context.ts
+                framework_hint: custom-script
+            - relation: tests
+              provenance: authored
+              target:
+                kind: test
+                repository: tieline
+                path: tests/unit/contract/test-contract-context-command.ts
+                framework_hint: custom-script
     - key: CONTRACT-004
       title: Inspect derived code topology without weakening contract authority
       actor: implementing agent

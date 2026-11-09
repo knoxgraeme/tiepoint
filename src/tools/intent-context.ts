@@ -48,6 +48,7 @@ export type ManifestIntentContextResolution =
   | {
       status: "resolved";
       repositoryRoot: string;
+      specDirectory: string;
       manifest: ContractManifest;
     }
   | { status: "no_workspace" | "no_manifest"; message: string };
@@ -67,12 +68,13 @@ export function resolveManifestIntentContext(
     return {
       status: "resolved",
       repositoryRoot: workspace.root,
+      specDirectory: workspace.specDirectoryPath,
       manifest: readContractManifest(workspace.manifestPath),
     };
   } catch (error) {
     return {
       status: "no_manifest",
-      message: `The contract manifest '${workspace.manifestPath}' is missing or unreadable, so exact intent context cannot be read: ${formatError(error)} Run \`tiepoint contract compile .\` in ${workspace.root} and commit the manifest.`,
+      message: `The contract manifest '${workspace.manifestPath}' is missing or unreadable, so exact intent context cannot be read: ${formatError(error)} Inspect current authored YAML. In committed mode, run \`tiepoint contract compile .\` in ${workspace.root} and review the generated diff; in post_merge mode, check the configured publisher.`,
     };
   }
 }
@@ -103,6 +105,7 @@ function registerAssetIntentContext(server: McpServer): void {
           ...(await lookupAssetIntentContext({
             manifest: resolved.manifest,
             repositoryRoot: resolved.repositoryRoot,
+            specDirectory: resolved.specDirectory,
             locator: {
               path: input.path,
               ...(input.kind === undefined ? {} : { kind: input.kind }),
@@ -141,6 +144,7 @@ function registerAcceptanceCriterionContext(server: McpServer): void {
           ...(await lookupAcceptanceCriterionIntentContext({
             manifest: resolved.manifest,
             repositoryRoot: resolved.repositoryRoot,
+            specDirectory: resolved.specDirectory,
             stableId: input.stable_id,
           })),
         });

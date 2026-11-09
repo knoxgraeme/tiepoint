@@ -188,7 +188,10 @@ Report:
 A fabricated or absent citation is downgraded to `unsupported`. Duplicate or
 out-of-scope IDs are rejected as malformed instead of being silently resolved.
 
-Remove the temporary verdict file after reporting. Do not persist grades, call
+Retain temporary scope and verdict files in ignored workspace storage through
+the active review so finding history and valid unchanged assessments are not
+lost; remove them when no longer needed. Do not persist grades as accepted
+contract state, call
 a model or database from Tiepoint, or let the independent grader edit contract
 YAML. In a grading-only request, report and stop. During implementation, return
 the findings to the implementing agent for the resolution loop below. A

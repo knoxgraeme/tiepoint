@@ -16,7 +16,7 @@
             "criterion": "Tiepoint must keep shared repository configuration portable while storing clone-local setup state and database credentials in a private external profile.",
             "links": [
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -36,7 +36,7 @@
                 }
               },
               {
-                "compiled_content_hash": "45ed398ca6a0226c8991567fd5ebf208bdcc4f25f72335654b7723b08923d106",
+                "compiled_content_hash": "fce7750824ef4fe4dfb13172c99e2c019282f25c19ed7b0b5ee39748b3029036",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -217,7 +217,7 @@
                 }
               },
               {
-                "compiled_content_hash": "45ed398ca6a0226c8991567fd5ebf208bdcc4f25f72335654b7723b08923d106",
+                "compiled_content_hash": "fce7750824ef4fe4dfb13172c99e2c019282f25c19ed7b0b5ee39748b3029036",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -251,7 +251,7 @@
             "criterion": "Tiepoint initialization must persist deterministic repository and runtime inputs from explicit flags and auto-detection without generating semantic contract content.",
             "links": [
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -295,7 +295,7 @@
             "criterion": "Tiepoint initialization must prepare explicitly selected project-agent targets and install the tiepoint skill through Skillfish only for those supported agents and scope.",
             "links": [
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -360,7 +360,7 @@
             "criterion": "Tiepoint must preserve a ready workspace and report a structured installer error when requested skill installation fails.",
             "links": [
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -404,7 +404,7 @@
             "criterion": "Tiepoint status must expose concise structured onboarding state without duplicating the authoring workflow.",
             "links": [
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -414,7 +414,7 @@
                 }
               },
               {
-                "compiled_content_hash": "45ed398ca6a0226c8991567fd5ebf208bdcc4f25f72335654b7723b08923d106",
+                "compiled_content_hash": "fce7750824ef4fe4dfb13172c99e2c019282f25c19ed7b0b5ee39748b3029036",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -448,7 +448,7 @@
             "criterion": "Tiepoint initialization must print an exact Tiepoint retry command when requested skill installation is incomplete.",
             "links": [
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -503,7 +503,7 @@
             "criterion": "Tiepoint initialization must accept context sources only through repeatable --context flags and validate each as an existing repository path or explicit HTTP(S) URL before mutation.",
             "links": [
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -557,7 +557,7 @@
                 }
               },
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -830,7 +830,7 @@
             "criterion": "Tiepoint must expose one semantic workflow prompt bundle that reports an accessible workspace's contract state, routes an empty contract to a user-facing product orientation before normal repository work, defers state routing to the client when a remote transport cannot access its checkout, then onboards, authors, grades, and reconciles using configured repository context and disclosed local duplicate checks when database-backed matching is unavailable, with a compatibility alias for its former prompt name.",
             "links": [
               {
-                "compiled_content_hash": "46d377db0c76d343a77b35d0caa1a0f01a5ae2ed802325e0f2704afd8671e17b",
+                "compiled_content_hash": "c267c47fba349d0d0cda99cc4de7f46318871d65cf8109bd7423cc7b4688696f",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -850,7 +850,7 @@
                 }
               },
               {
-                "compiled_content_hash": "7d2f8f0466e51a49380a587637397ed4bbd2bfb61e0f7dfd56678cb2dd757939",
+                "compiled_content_hash": "8013f621655d9dbb8a2b7155dd337bcc66856771440862f348bd4be3287b523b",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -925,7 +925,7 @@
                 }
               },
               {
-                "compiled_content_hash": "7d2f8f0466e51a49380a587637397ed4bbd2bfb61e0f7dfd56678cb2dd757939",
+                "compiled_content_hash": "8013f621655d9dbb8a2b7155dd337bcc66856771440862f348bd4be3287b523b",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -959,7 +959,7 @@
             "criterion": "Tiepoint's project-installed skill and equivalent MCP prompt must make semantic closeout discoverable before handoff or branch publication, classify every changed behavior cluster including relevant untracked files, directly apply and validate justified contract changes within the authorized commit or publication boundary, and rerun after later implementation changes.",
             "links": [
               {
-                "compiled_content_hash": "7d2f8f0466e51a49380a587637397ed4bbd2bfb61e0f7dfd56678cb2dd757939",
+                "compiled_content_hash": "8013f621655d9dbb8a2b7155dd337bcc66856771440862f348bd4be3287b523b",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {

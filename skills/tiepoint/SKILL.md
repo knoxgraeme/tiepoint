@@ -51,6 +51,9 @@ Read [contract.md](references/contract.md) before editing contract YAML.
 ## Choose the flow
 
 - For ideation or planning, use MCP writes when planning writes are available.
+  First read bounded current intent for the known paths or ACs using **Read
+  exact intent before discovery** below, before settling the plan or editing.
+  This read does not require a new planning record or a database connection.
   Keep Stories/ACs in Postgres with `authority=planning` and
   `lifecycle=backlog`. Do not modify the worktree. If planning writes are
   unavailable, disclose that the planning record cannot yet be persisted.
@@ -143,10 +146,24 @@ semantic search:
 
 These two primitive reads answer from the compiled manifest without Postgres,
 embeddings, or network access. They return the repository key and
-content-derived manifest digest that identify the reviewed contract. Asset
+content-derived manifest digest that identify the published contract, plus
+`authored_inputs.status` (`current`, `stale`, or `unknown`) comparing the
+published input paths and hashes with current YAML. This is separate from
+linked code/test freshness and semantic support. Asset
 context reports `has_context`, `no_criteria`, or `not_found`; AC context returns
 the exact product ancestry, criterion, scenarios, direct links, and
 Story-fallback links or an explicit `not_found` result for an unknown ID.
+
+When authored inputs are stale, unknown, or the manifest is unavailable, inspect
+current YAML in the configured spec directory for the named paths/IDs before
+planning or editing. Disclose the publication gap; a successful `no_criteria`
+or `not_found` lookup does not establish that current authored intent is absent.
+Keep published and unpublished definitions distinct. Do not silently compile or
+publish to repair a read. In `post_merge` mode, check the configured publisher
+and follow [manifest-maintenance.md](references/manifest-maintenance.md).
+For a large path result, narrow by a known selector or exact AC ID and summarize
+the relevant rules; do not expand the whole graph. State which rule constrained
+or changed a decision, or that no relevant rule or decision change was found.
 
 Treat associated code and tests as a bounded **intent neighborhood** and shared
 AC links as **contract coupling**. The result stops after one AC-mediated hop;

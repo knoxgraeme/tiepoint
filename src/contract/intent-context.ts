@@ -11,6 +11,7 @@ import {
   type ArtifactTarget,
 } from "./artifact-assurance.js";
 import { manifestDigest, type ContractManifest } from "./manifest.js";
+import { inspectManifestInputFreshness, type ManifestInputFreshness } from "./manifest-input-freshness.js";
 import {
   canonicalRepositoryRelativePath,
   repositoryEntryKindExactly,
@@ -87,6 +88,7 @@ export interface AcceptanceCriterionIntentNeighborhood {
 interface IntentContextIdentity {
   repository: ContractManifest["repository"];
   manifest_digest: string;
+  authored_inputs: ManifestInputFreshness;
   /** Explicitly names the authored relationship represented by this result. */
   relationship: "contract_coupling";
 }
@@ -131,6 +133,7 @@ export class IntentContextError extends Error {
 interface IntentContextInput {
   manifest: ContractManifest;
   repositoryRoot: string;
+  specDirectory?: string;
   /** Reuse a caller-built index when multiple exact reads share one manifest. */
   index?: ContractIntentIndex;
   /** Narrow injection seam for callers that already own a request inspector. */
@@ -301,6 +304,7 @@ function contextParts(
     identity: {
       repository: { ...input.manifest.repository },
       manifest_digest: manifestDigest(input.manifest),
+      authored_inputs: inspectManifestInputFreshness(input),
       relationship: "contract_coupling",
     },
     index: input.index ?? buildContractIntentIndex(input.manifest),

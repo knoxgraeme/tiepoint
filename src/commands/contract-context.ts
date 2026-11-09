@@ -18,6 +18,7 @@ import { escapeTerminalText, type CommandIO } from "./shared.js";
 export interface ContractContextCommand {
   repositoryRoot: string;
   manifestPath: string;
+  specDirectory?: string;
   json: boolean;
   path?: string;
   kind?: string;
@@ -125,6 +126,8 @@ export function renderIntentContextText(
   text += "Reviewed contract:\n";
   text += `  repository key: ${escapeTerminalText(result.repository.key)}\n`;
   text += `  manifest digest: ${escapeTerminalText(result.manifest_digest)}\n`;
+  text += `  authored inputs: ${escapeTerminalText(result.authored_inputs.status)}\n`;
+  text += `  ${escapeTerminalText(result.authored_inputs.detail)}\n`;
   text +=
     "Relationship: bounded intent neighborhood through contract coupling; this does not establish runtime dependency or semantic proof.\n";
   text += `Answer: ${escapeTerminalText(result.answer)}\n`;
@@ -168,7 +171,7 @@ function readIntentContextManifest(
     throw new Error(
       `Cannot inspect intent context because the contract manifest at '${parsed.manifestPath}' is unreadable: ${
         error instanceof Error ? error.message : String(error)
-      } Run \`tiepoint contract compile .\` and commit the manifest.`
+      } Inspect current authored YAML. In committed mode, run \`tiepoint contract compile .\` and review the generated diff; in post_merge mode, check the configured publisher.`
     );
   }
 }
@@ -198,6 +201,7 @@ export async function runContractContext(
       ? await lookupAssetIntentContext({
           manifest,
           repositoryRoot: parsed.repositoryRoot,
+          specDirectory: parsed.specDirectory,
           locator: {
             path: parsed.path,
             ...(parsed.kind === undefined
@@ -211,6 +215,7 @@ export async function runContractContext(
       : await lookupAcceptanceCriterionIntentContext({
           manifest,
           repositoryRoot: parsed.repositoryRoot,
+          specDirectory: parsed.specDirectory,
           stableId: parsed.ac!,
         });
   io.write(

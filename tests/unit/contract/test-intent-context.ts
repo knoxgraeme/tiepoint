@@ -3,6 +3,7 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  renameSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -28,6 +29,7 @@ import {
   resolveManifestIntentContext,
 } from "../../../src/tools/intent-context.js";
 import { workspaceFromConfig } from "../../../src/tiepoint/workspace.js";
+import { getTiepointStatus } from "../../../src/tiepoint/status.js";
 import type { ToolResult } from "../../../src/tools/shared.js";
 import { tiepointConfigJson } from "../../support/fixtures.js";
 import { report, test } from "../../support/harness.js";
@@ -248,6 +250,140 @@ function createFixture() {
     index: buildContractIntentIndex(manifest),
   };
 }
+
+await test("discloses unpublished authored changes without replacing the published context", async () => {
+  const fixture = createFixture();
+  const specPath = resolve(fixture.root, ".tiepoint/spec/intent.yaml");
+  const freshness = (value: unknown) => z.object({
+    authored_inputs: z.object({ status: z.enum(["current", "stale", "unknown"]), detail: z.string() }),
+  }).parse(value).authored_inputs;
+  try {
+    const read = () => lookupAcceptanceCriterionIntentContext({ ...fixture, stableId: "INTENT-001-AC1" });
+    const original = await read();
+    assert.equal(freshness(original).status, "current");
+    const publishedBytes = readFileSync(resolve(fixture.root, ".tiepoint/manifest/INTENT.json"), "utf8");
+    writeFileSync(specPath, SPEC.replace("one selector.", "a changed outcome."));
+    const stale = await read();
+    assert.equal(freshness(stale).status, "stale");
+    assert.match(freshness(stale).detail, /current authored YAML/i);
+    assert.equal(stale.manifest_digest, original.manifest_digest);
+    assert.deepEqual(stale.intent_neighborhood, original.intent_neighborhood);
+
+    writeFileSync(resolve(fixture.root, ".tiepoint/config.json"), JSON.stringify({
+      ...JSON.parse(readFileSync(resolve(fixture.root, ".tiepoint/config.json"), "utf8")),
+      manifest_mode: "post_merge",
+    }));
+    const status = getTiepointStatus(workspaceFromConfig(resolve(fixture.root, ".tiepoint/config.json")), {});
+    assert.equal(freshness(status.contract).status, "stale");
+    assert.match(status.next_action, /publisher.*current authored YAML/i);
+    assert.equal(status.contract.manifest_exists, true);
+    writeFileSync(specPath, "invalid: [yaml");
+    const invalidStatus = getTiepointStatus(workspaceFromConfig(resolve(fixture.root, ".tiepoint/config.json")), {});
+    assert.equal(freshness(invalidStatus.contract).status, "stale");
+    assert.match(invalidStatus.next_action, /publisher.*current authored YAML/i);
+    assert.match(freshness(invalidStatus.contract).detail, /validation failed/i);
+    assert.equal(invalidStatus.contract.acceptance_criteria, 2, "unreadable authored counts must fall back to the explicitly identified publication");
+    assert.equal(invalidStatus.contract.counts_source, "published_manifest");
+    assert.equal(invalidStatus.onboarding, null);
+
+    writeFileSync(specPath, SPEC);
+    mkdirSync(resolve(fixture.root, ".tiepoint/spec/nested"));
+    const newPath = resolve(fixture.root, ".tiepoint/spec/nested/new.yml");
+    writeFileSync(newPath, "new unpublished criterion");
+    const absent = await lookupAcceptanceCriterionIntentContext({ ...fixture, stableId: "INTENT-NEW-AC1" });
+    assert.equal(absent.status, "not_found");
+    assert.equal(freshness(absent).status, "stale", "new files outside manifest.inputs must be detected");
+    const unclaimed = await lookupAssetIntentContext({ ...fixture, locator: { path: "src/unlinked.ts" } });
+    assert.equal(unclaimed.status, "no_criteria");
+    assert.equal(freshness(unclaimed).status, "stale", "negative reads must disclose pending publication too");
+    rmSync(newPath);
+    rmSync(specPath);
+    assert.equal(freshness(await read()).status, "stale", "removed authored inputs must be detected");
+    const emptyStatus = getTiepointStatus(workspaceFromConfig(resolve(fixture.root, ".tiepoint/config.json")), {});
+    assert.match(emptyStatus.next_action, /publisher.*current authored YAML/i);
+    assert.equal(emptyStatus.onboarding, null, "a delayed publication must not be treated as a newly initialized repository");
+    writeFileSync(specPath, "invalid: [yaml");
+    assert.equal(freshness(await read()).status, "stale", "freshness must not parse or compile invalid edits");
+    writeFileSync(specPath, SPEC);
+    writeFileSync(resolve(fixture.root, "src/shared.ts"), "export function first() { return 1; }\n");
+    assert.equal(freshness(await read()).status, "current", "input freshness must stay separate from linked-code freshness");
+    assert.equal(readFileSync(resolve(fixture.root, ".tiepoint/manifest/INTENT.json"), "utf8"), publishedBytes);
+  } finally {
+    rmSync(fixture.root, { recursive: true, force: true });
+  }
+});
+
+await test("reports unknown input freshness on inspection limits and repository escapes", async () => {
+  const fixture = createFixture();
+  const outside = mkdtempSync(resolve(tmpdir(), "tiepoint-intent-outside-spec-"));
+  const freshness = (value: unknown) => z.object({
+    authored_inputs: z.object({ status: z.enum(["current", "stale", "unknown"]), detail: z.string() }),
+  }).parse(value).authored_inputs;
+  try {
+    writeFileSync(resolve(fixture.root, ".tiepoint/spec/intent.yaml"), "x".repeat(2 * 1024 * 1024 + 1));
+    const oversized = await lookupAssetIntentContext({ ...fixture, locator: { path: "src/unlinked.ts" } });
+    assert.equal(oversized.status, "no_criteria");
+    assert.equal(freshness(oversized).status, "unknown");
+    assert.match(freshness(oversized).detail, /oversized/);
+    const oversizedStatus = getTiepointStatus(workspaceFromConfig(resolve(fixture.root, ".tiepoint/config.json")), {});
+    assert.equal(freshness(oversizedStatus.contract).status, "unknown");
+    assert.equal(oversizedStatus.contract.counts_source, "published_manifest");
+    rmSync(resolve(fixture.root, ".tiepoint/manifest"), { recursive: true });
+    const unpublishedStatus = getTiepointStatus(workspaceFromConfig(resolve(fixture.root, ".tiepoint/config.json")), {});
+    assert.equal(freshness(unpublishedStatus.contract).status, "unknown");
+    assert.match(freshness(unpublishedStatus.contract).detail, /oversized/, "a missing publication must not bypass bounded authored inspection");
+    assert.equal(unpublishedStatus.contract.counts_source, "unavailable");
+    rmSync(resolve(fixture.root, ".tiepoint/spec"), { recursive: true });
+    symlinkSync(outside, resolve(fixture.root, ".tiepoint/spec"));
+    const escaped = await lookupAcceptanceCriterionIntentContext({ ...fixture, stableId: "INTENT-001-AC1" });
+    assert.equal(escaped.status, "found");
+    assert.equal(freshness(escaped).status, "unknown");
+    assert.match(freshness(escaped).detail, /outside the repository/);
+    rmSync(resolve(fixture.root, ".tiepoint/spec"));
+    mkdirSync(resolve(fixture.root, ".tiepoint/spec"));
+    writeFileSync(resolve(fixture.root, ".tiepoint/spec/intent.yaml"), SPEC);
+    const deep = resolve(fixture.root, ".tiepoint/spec", ...Array<string>(33).fill("nested"));
+    mkdirSync(deep, { recursive: true });
+    assert.equal(freshness(await lookupAcceptanceCriterionIntentContext({ ...fixture, stableId: "INTENT-001-AC1" })).status, "unknown");
+  } finally {
+    rmSync(fixture.root, { recursive: true, force: true });
+    rmSync(outside, { recursive: true, force: true });
+  }
+});
+
+await test("status uses the authored loader's nested-symlink policy after bounded inspection", () => {
+  const fixture = createFixture();
+  const outside = mkdtempSync(resolve(tmpdir(), "tiepoint-status-symlink-"));
+  try {
+    rmSync(resolve(fixture.root, ".tiepoint/manifest"), { recursive: true });
+    rmSync(resolve(fixture.root, ".tiepoint/spec/intent.yaml"));
+    writeFileSync(resolve(outside, "outside.yaml"), "not a repository contract");
+    symlinkSync(outside, resolve(fixture.root, ".tiepoint/spec/linked"));
+    const status = getTiepointStatus(workspaceFromConfig(resolve(fixture.root, ".tiepoint/config.json")), {});
+    assert.equal(status.contract.counts_source, "authored");
+    assert.equal(status.contract.documents, 0);
+    assert.ok(status.onboarding, "YAML reached only through a nested symlink is not an authored source");
+  } finally {
+    rmSync(fixture.root, { recursive: true, force: true });
+    rmSync(outside, { recursive: true, force: true });
+  }
+});
+
+await test("bounds ancestor enumeration used by authored input snapshot reads", async () => {
+  const fixture = createFixture();
+  try {
+    for (let index = 0; index < 4097; index++) {
+      writeFileSync(resolve(fixture.root, `unrelated-${index}`), "");
+    }
+    const result = await lookupAcceptanceCriterionIntentContext({ ...fixture, stableId: "INTENT-001-AC1" });
+    const inputs = z.object({ authored_inputs: z.object({ status: z.string(), detail: z.string() }) }).parse(result).authored_inputs;
+    assert.equal(inputs.status, "unknown", "ancestor directory names must share the inspection budget");
+    assert.match(inputs.detail, /4096/);
+    assert.equal(result.status, "found", "inspection limits must preserve the published answer");
+  } finally {
+    rmSync(fixture.root, { recursive: true, force: true });
+  }
+});
 
 await test("rejects duplicate stable IDs before exact context reads", () => {
   const fixture = createFixture();
@@ -889,6 +1025,25 @@ await test("registers primitive offline MCP context reads with strict parity", a
     z.object(acTool.config.outputSchema)
       .strict()
       .parse(acResult.structuredContent);
+
+    writeFileSync(resolve(fixture.root, ".tiepoint/spec/intent.yaml"), `${SPEC}\n# pending publication\n`);
+    const staleResult = await acTool.handler({ stable_id: "INTENT-404-AC1" });
+    const staleContext = z.object(acTool.config.outputSchema).strict().parse(staleResult.structuredContent);
+    assert.equal(staleContext.status, "not_found");
+    assert.equal(staleContext.authored_inputs.status, "stale");
+
+    writeFileSync(resolve(fixture.root, ".tiepoint/spec/intent.yaml"), SPEC);
+    renameSync(resolve(fixture.root, ".tiepoint/spec"), resolve(fixture.root, ".tiepoint/custom-spec"));
+    writeFileSync(resolve(fixture.root, ".tiepoint/config.json"), tiepointConfigJson({
+      name: "Custom spec", repoName: REPOSITORY, specDirectory: "custom-spec",
+    }));
+    fixture.manifest.inputs[0]!.path = ".tiepoint/custom-spec/intent.yaml";
+    writeContractManifest(resolve(fixture.root, ".tiepoint/manifest"), {
+      manifest: fixture.manifest,
+      sources: new Map([["INTENT", fixture.manifest.inputs[0]!]]),
+    });
+    const customResult = await acTool.handler({ stable_id: "INTENT-001-AC1" });
+    assert.equal(z.object(acTool.config.outputSchema).strict().parse(customResult.structuredContent).authored_inputs.status, "current");
 
     const stray = mkdtempSync(resolve(tmpdir(), "tiepoint-intent-no-workspace-"));
     try {
