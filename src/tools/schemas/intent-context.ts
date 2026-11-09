@@ -31,6 +31,10 @@ export type GetAcceptanceCriterionContextInput = z.infer<
 const intentContextHash = z.string().regex(/^[a-f0-9]{64}$/);
 const intentContextApplicability = applicability.nullable();
 const intentContextRepository = z.object({ key: z.string().min(1) }).strict();
+const authoredInputs = z.object({
+  status: z.enum(["current", "stale", "unknown"]),
+  detail: z.string().min(1),
+}).strict();
 const intentContextTarget = z
   .object({
     kind: z.enum(["code", "test"]),
@@ -225,6 +229,7 @@ const intentContextNeighborhood = z
 export const getAssetIntentContextOutputShape = {
   repository: intentContextRepository,
   manifest_digest: intentContextHash,
+  authored_inputs: authoredInputs,
   relationship: z.literal("contract_coupling"),
   locator: z
     .object({
@@ -244,6 +249,7 @@ export const getAssetIntentContextOutputShape = {
 export const getAcceptanceCriterionContextOutputShape = {
   repository: intentContextRepository,
   manifest_digest: intentContextHash,
+  authored_inputs: authoredInputs,
   relationship: z.literal("contract_coupling"),
   requested_stable_id: stableId,
   status: z.enum(["found", "not_found"]),

@@ -350,7 +350,7 @@
                 }
               },
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -554,7 +554,7 @@
                 }
               },
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -604,7 +604,7 @@
                 }
               },
               {
-                "compiled_content_hash": "45ed398ca6a0226c8991567fd5ebf208bdcc4f25f72335654b7723b08923d106",
+                "compiled_content_hash": "fce7750824ef4fe4dfb13172c99e2c019282f25c19ed7b0b5ee39748b3029036",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -785,7 +785,7 @@
             "criterion": "Tiepoint must report every acceptance criterion linked to an exact repository-relative path, must distinguish a link carried by the acceptance criterion itself from one carried only by its Story, and must return an explicit has_criteria, no_criteria, or not_found status for every requested path.",
             "links": [
               {
-                "compiled_content_hash": "a9b5acf79c52c318b706d863b4eb278f6493fcd907250b526c770cae6f54cd25",
+                "compiled_content_hash": "06d659829f49bc70e90de71dfe8403818ade5ff516cac41722b4302cdde9b2e8",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -960,7 +960,7 @@
             "criterion": "Given an exact repository-relative code or test path with optional kind and selector, Tiepoint must preserve the complete locator identity, return has_context, no_criteria, or not_found explicitly, include exact-selector and file-level claims while excluding other selectors, and bound associated assets to one Acceptance-Criterion-mediated intent neighborhood.",
             "links": [
               {
-                "compiled_content_hash": "e345bf268ae6263c95121d16663d5e9b8b7bb52203f563b0897c6e61e6c58c28",
+                "compiled_content_hash": "175b135671c4addf050539309924d013ba61d41f7a8cf174395e1583cf62067e",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -971,7 +971,7 @@
                 }
               },
               {
-                "compiled_content_hash": "84d65ad9447bd375056224a823d7cc37e7eaae1182b016898bf0e5feab20c5df",
+                "compiled_content_hash": "09178f1c49df0248a69689ab9dee10fb842c3c1d8d01d4f9399a6b116f13a64f",
                 "provenance": "authored",
                 "relation": "tests",
                 "target": {
@@ -1010,7 +1010,7 @@
             "criterion": "Given an exact Acceptance Criterion stable ID, Tiepoint must return its Capability and Story ancestry, lifecycle, criterion, rationale, applicability, scenarios, direct links, Story-fallback links, and directly associated code and test assets without recursive code-to-code traversal.",
             "links": [
               {
-                "compiled_content_hash": "e345bf268ae6263c95121d16663d5e9b8b7bb52203f563b0897c6e61e6c58c28",
+                "compiled_content_hash": "175b135671c4addf050539309924d013ba61d41f7a8cf174395e1583cf62067e",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -1021,7 +1021,7 @@
                 }
               },
               {
-                "compiled_content_hash": "84d65ad9447bd375056224a823d7cc37e7eaae1182b016898bf0e5feab20c5df",
+                "compiled_content_hash": "09178f1c49df0248a69689ab9dee10fb842c3c1d8d01d4f9399a6b116f13a64f",
                 "provenance": "authored",
                 "relation": "tests",
                 "target": {
@@ -1104,7 +1104,7 @@
                 }
               },
               {
-                "compiled_content_hash": "84d65ad9447bd375056224a823d7cc37e7eaae1182b016898bf0e5feab20c5df",
+                "compiled_content_hash": "09178f1c49df0248a69689ab9dee10fb842c3c1d8d01d4f9399a6b116f13a64f",
                 "provenance": "authored",
                 "relation": "tests",
                 "target": {
@@ -1150,7 +1150,7 @@
             "criterion": "Tiepoint must expose separate get_asset_intent_context and get_acceptance_criterion_context MCP tools and equivalent contract context --path and --ac CLI modes that answer from the compiled manifest without a database and preserve the same membership, statuses, repository key, and content-derived manifest digest.",
             "links": [
               {
-                "compiled_content_hash": "5ca77d904647bdee8543643cc0d03b0803bfe028990b23bb412041fd955573cd",
+                "compiled_content_hash": "73c7702629b5847038b158d1e9e77752d3cf4673e5a5db49867465191d6a2cdd",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -1172,7 +1172,7 @@
                 }
               },
               {
-                "compiled_content_hash": "9e396300b66554d119d8e8b87ab3063630e392a20ece506b427543b38e6f4525",
+                "compiled_content_hash": "8a0e1dddb9acf9ea103a81bb5e3529f0699c17cf68e442c429e576669631ce97",
                 "provenance": "authored",
                 "relation": "implements",
                 "target": {
@@ -1194,7 +1194,7 @@
                 }
               },
               {
-                "compiled_content_hash": "dd3dd54e650900fac9bada7fe40669358a3162297007f137c87f96ec6a063d5a",
+                "compiled_content_hash": "80be1ed916fa07c02bf611d673849b69ad10122e1cd54f4b4efd824035dd48b5",
                 "provenance": "authored",
                 "relation": "tests",
                 "target": {
@@ -1205,7 +1205,7 @@
                 }
               },
               {
-                "compiled_content_hash": "84d65ad9447bd375056224a823d7cc37e7eaae1182b016898bf0e5feab20c5df",
+                "compiled_content_hash": "09178f1c49df0248a69689ab9dee10fb842c3c1d8d01d4f9399a6b116f13a64f",
                 "provenance": "authored",
                 "relation": "tests",
                 "target": {
@@ -1278,6 +1278,95 @@
               }
             ],
             "stable_id": "CONTRACT-003-AC5",
+            "supersedes": null
+          },
+          {
+            "aliases": [],
+            "applies_to": null,
+            "contract_hash": "7616d8bfc58ba39d76dc59ea748c8840cbed8912e856fc2a969fc435fecc4a78",
+            "criterion": "Exact intent context and workspace status must disclose whether published authored-input paths and hashes match current configured YAML as current, stale, or unknown, without compiling, publishing, or replacing the published context and without conflating input freshness with linked evidence assurance or semantic review.",
+            "links": [
+              {
+                "compiled_content_hash": "175b135671c4addf050539309924d013ba61d41f7a8cf174395e1583cf62067e",
+                "provenance": "authored",
+                "relation": "implements",
+                "target": {
+                  "kind": "code",
+                  "path": "src/contract/intent-context.ts",
+                  "repository": "tieline"
+                }
+              },
+              {
+                "compiled_content_hash": "59bf8733e1a06b17eb76cb85e2db6dc33e8137ce44906f7e63fc734c8d4390ee",
+                "provenance": "authored",
+                "relation": "implements",
+                "target": {
+                  "kind": "code",
+                  "path": "src/contract/manifest-input-freshness.ts",
+                  "repository": "tieline",
+                  "selector": "function:inspectManifestInputFreshness"
+                }
+              },
+              {
+                "compiled_content_hash": "fce7750824ef4fe4dfb13172c99e2c019282f25c19ed7b0b5ee39748b3029036",
+                "provenance": "authored",
+                "relation": "implements",
+                "target": {
+                  "kind": "code",
+                  "path": "src/tiepoint/status.ts",
+                  "repository": "tieline",
+                  "selector": "function:getTiepointStatus"
+                }
+              },
+              {
+                "compiled_content_hash": "80be1ed916fa07c02bf611d673849b69ad10122e1cd54f4b4efd824035dd48b5",
+                "provenance": "authored",
+                "relation": "tests",
+                "target": {
+                  "framework_hint": "custom-script",
+                  "kind": "test",
+                  "path": "tests/unit/contract/test-contract-context-command.ts",
+                  "repository": "tieline"
+                }
+              },
+              {
+                "compiled_content_hash": "09178f1c49df0248a69689ab9dee10fb842c3c1d8d01d4f9399a6b116f13a64f",
+                "provenance": "authored",
+                "relation": "tests",
+                "target": {
+                  "framework_hint": "custom-script",
+                  "kind": "test",
+                  "path": "tests/unit/contract/test-intent-context.ts",
+                  "repository": "tieline"
+                }
+              }
+            ],
+            "position": 5,
+            "rationale": "Post-merge checks can validate current YAML while later planning reads still use an older publication, including negative lookups that omit newly authored criteria.",
+            "scenarios": [
+              {
+                "given": "authored YAML has changed or a spec file was added or removed after publication",
+                "position": 0,
+                "stable_id": "CONTRACT-003-AC6-S1",
+                "then": "the published neighborhood and digest must remain unchanged while authored input freshness is stale and current-YAML inspection is advised",
+                "when": "exact asset or criterion context is read, including a negative result"
+              },
+              {
+                "given": "authored inputs cannot be inspected safely within file, byte, entry, or depth limits",
+                "position": 1,
+                "stable_id": "CONTRACT-003-AC6-S2",
+                "then": "authored input freshness must be unknown rather than current and the published result must remain available",
+                "when": "published context is read"
+              },
+              {
+                "given": "post-merge publication is pending",
+                "position": 2,
+                "stable_id": "CONTRACT-003-AC6-S3",
+                "then": "it must direct maintainers to the configured publisher and current YAML without claiming that a publisher is installed or healthy",
+                "when": "workspace status is read"
+              }
+            ],
+            "stable_id": "CONTRACT-003-AC6",
             "supersedes": null
           }
         ],
@@ -2240,6 +2329,6 @@
   },
   "input": {
     "path": ".tiepoint/spec/contract.yaml",
-    "sha256": "62426aeb4d0a2913c18946794674aa5f0b315a11ac68faaa04aac910129dc50a"
+    "sha256": "8ca00fd2a490eb04f32ae4123975c9c9a781fb103895b47f685d4a18179a7a91"
   }
 }

@@ -170,5 +170,9 @@ A failed refresh remains a failed job; checks report publication as pending unti
 it succeeds. Rerun the job to recover. Branch protection may reject the bot's push;
 retain committed mode until an approved publishing identity/workflow is available,
 rather than bypassing required checks. Automatic hashing records a source snapshot,
-not a semantic verdict. Existing context/topology reads retain explicit published
-snapshot freshness and may remain stale while publication is pending.
+not a semantic verdict. Exact context reads retain the published snapshot and
+report `authored_inputs.status` against current YAML, as does `tiepoint status`.
+This diagnostic does not prove that a publisher is installed or healthy. Inspect
+current authored YAML while publication is pending, including when published
+context returns no criteria. A successful in-memory check or grade does not
+refresh that snapshot. Topology reads retain their existing freshness behavior.

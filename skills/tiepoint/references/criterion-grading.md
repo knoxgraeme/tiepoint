@@ -95,7 +95,13 @@ honestly rather than choosing a different grade to obtain a pass.
 For implementation, return findings to the implementing agent and follow
 [the resolution loop](grading.md#resolve-findings-during-implementation). For a
 grading-only request, report and stop. Keep the grader read-only in both cases.
-Remove temporary verdict files after reporting.
+Retain the emitted scope, verified verdicts, and original findings through the
+active review in ignored workspace storage (for example `.context/`). Merge
+unchanged-ID verdicts into the final verification input rather than recreating
+them. Reassess changed IDs; unchanged IDs are reuse within this closeout, not a
+new independent review. Keep final-head binding in the separate closeout report.
+Remove temporary artifacts when the active review no longer needs them; do not
+commit verdicts as accepted contract state.
 
 For an implementation flow with authorized commits, preserve review dispositions
 separately through [commit-bound closeout](closeout.md). Verified grading is input

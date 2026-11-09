@@ -29,7 +29,14 @@ concurrent merges. Errors remain visible; no force push or branch-policy bypass
 is attempted. Automatic publication currently requires standard spec/manifest
 paths. The repository's default mode remains unchanged by this feature.
 
-Artifact-first context and topology readers continue to expose the published
-snapshot and its freshness; they do not silently compile a newer authority.
-Inspect current YAML when reviewing unpublished edits. Topology compilation and
+Exact context reads and `status` report `authored_inputs.status` as `current`,
+`stale`, or `unknown`. The comparison checks YAML paths and bytes, including
+unpublished additions and removals, without compiling or publishing. It does
+not verify a working publisher, semantic review, or test execution. A pending
+publication with no functioning publisher needs repository-owner action; a
+green check that compiled YAML in memory does not repair future context reads.
+Inspect current YAML when reviewing unpublished edits, including negative
+context results. Retain committed mode until a functioning publisher and its
+write identity have been approved; do not change policy or bypass branch
+protections to clear a diagnostic. Topology compilation and
 validation are unchanged; whether its graph is committed follows `topology_mode`.

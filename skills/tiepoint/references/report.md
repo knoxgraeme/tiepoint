@@ -36,6 +36,12 @@ silently modify files merely to satisfy the report format.
 
 ## Rules
 
+- Report concrete findings separately from final grades: semantic discrepancies,
+  incidental bugs, missing evidence links, citation limitations, and owner-accepted
+  trade-offs. Preserve each finding's fixed, rejected-with-evidence, or unresolved
+  disposition and any overlap with ordinary review. A final supported grade after
+  repairs is not a claim of zero findings. Name tests actually run separately from
+  linked tests. Keep detailed history in the PR; do not build a reporting system.
 - Fifteen lines or fewer before any code block.
 - No inventory of sources read, no command-by-command verification table,
   no capability descriptions, no link-by-link narratives in chat. That

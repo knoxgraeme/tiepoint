@@ -1,8 +1,8 @@
-import { existsSync, readdirSync } from "node:fs";
 import type { EmbeddingProvider } from "../config.js";
 import { TIEPOINT_VERSION } from "../package-metadata.js";
-import { loadAcceptedContract } from "../contract/load.js";
+import { hasAcceptedContractSources, loadAcceptedContract } from "../contract/load.js";
 import { readContractManifest } from "../contract/manifest.js";
+import { inspectManifestInputFreshness, type ManifestInputFreshness } from "../contract/manifest-input-freshness.js";
 import {
   inspectMcpClientConfigs,
   type McpClientConfigDiagnostic,
@@ -40,6 +40,8 @@ export interface TiepointStatus {
     stories: number;
     acceptance_criteria: number;
     manifest_exists: boolean;
+    authored_inputs: ManifestInputFreshness;
+    counts_source: "authored" | "published_manifest" | "unavailable";
   };
   next_action: string;
   onboarding: {
@@ -59,12 +61,11 @@ function configured(value: string | undefined): boolean {
   return Boolean(value?.trim());
 }
 
-function readableManifest(directory: string): boolean {
+function readableManifest(directory: string): ReturnType<typeof readContractManifest> | null {
   try {
-    readContractManifest(directory);
-    return true;
+    return readContractManifest(directory);
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -81,32 +82,43 @@ export function getTiepointStatus(
         workspace.config.runtime.default_embedding_provider,
       setup_completed_at: null,
     };
-  const hasContractFiles =
-    existsSync(workspace.specDirectoryPath) &&
-    readdirSync(workspace.specDirectoryPath, { recursive: true }).some(
-      (entry) =>
-        String(entry).endsWith(".yaml") ||
-        String(entry).endsWith(".yml")
-    );
-  const loaded = hasContractFiles
-    ? loadAcceptedContract(
-        workspace.root,
-        `.tiepoint/${workspace.config.files.spec_directory}`
-      )
-    : { documents: [], warnings: [] };
-  const stories = loaded.documents.flatMap(
-    (document) => document.capability.stories
-  );
-  const acceptanceCriteria = stories.flatMap(
-    (story) => story.acceptance_criteria
-  );
   // Presence alone is not availability: an interrupted compile, malformed
   // shard, or legacy schema cannot answer manifest-backed reads. Status stays
   // recoverable and sends each of those states through the existing compile
   // action instead of throwing.
-  const manifestExists = readableManifest(workspace.manifestPath);
+  const manifest = readableManifest(workspace.manifestPath);
+  const manifestExists = manifest !== null;
+  const inspectedInputs = inspectManifestInputFreshness({
+    repositoryRoot: workspace.root,
+    manifest: manifest ?? { inputs: [] },
+    specDirectory: workspace.specDirectoryPath,
+  });
+  const authoredInputs: ManifestInputFreshness = manifest ? inspectedInputs : {
+    status: "unknown",
+    detail: "No readable published manifest is available to compare with current authored YAML." +
+      (inspectedInputs.status === "unknown" ? ` ${inspectedInputs.detail}` : ""),
+  };
+  let loaded: ReturnType<typeof loadAcceptedContract> | null = null;
+  // A failed bounded inspection must not lead to an unbounded validation read.
+  if (inspectedInputs.status !== "unknown") {
+    try {
+      const hasContractFiles = hasAcceptedContractSources(workspace.root, workspace.specDirectoryPath);
+      loaded = hasContractFiles
+        ? loadAcceptedContract(workspace.root, workspace.specDirectoryPath)
+        : { documents: [], warnings: [] };
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      authoredInputs.detail += ` Authored YAML validation failed: ${detail.slice(0, 2000)}`;
+    }
+  }
+  const countsSource = loaded ? "authored" : manifest ? "published_manifest" : "unavailable";
+  const capabilities = loaded?.documents.map((document) => document.capability)
+    ?? manifest?.capabilities ?? [];
+  const storyCount = capabilities.reduce((count, capability) => count + capability.stories.length, 0);
+  const criterionCount = capabilities.reduce((count, capability) => count +
+    capability.stories.reduce((total, story) => total + story.acceptance_criteria.length, 0), 0);
   const onboarding =
-    stories.length === 0
+    loaded !== null && storyCount === 0 && !manifest
       ? ({
           required: true,
           skill: "tiepoint",
@@ -114,12 +126,20 @@ export function getTiepointStatus(
           install_command: ONBOARDING_SKILL_INSTALL_COMMAND,
         } as const)
       : null;
-  const nextAction =
-    onboarding
-      ? onboarding.instruction
-      : !manifestExists
-        ? "Run `tiepoint contract compile .` and review the semantic diff."
-        : "Use $tiepoint to reconcile branch work; the pull request is the approval boundary.";
+  let nextAction: string;
+  if (onboarding) {
+    nextAction = onboarding.instruction;
+  } else if (!manifestExists) {
+    nextAction = workspace.config.manifest_mode === "post_merge"
+      ? "Check the configured post-merge publisher and inspect current authored YAML; publication is pending."
+      : "Run `tiepoint contract compile .` and review the semantic diff.";
+  } else if (authoredInputs.status !== "current") {
+    nextAction = workspace.config.manifest_mode === "post_merge"
+      ? "Check the configured post-merge publisher and inspect current authored YAML; published context is stale or unverified."
+      : "Inspect current authored YAML, then run `tiepoint contract compile .` and review the generated diff.";
+  } else {
+    nextAction = "Use $tiepoint to reconcile branch work; the pull request is the approval boundary.";
+  }
   const mcpConfigs = inspectMcpClientConfigs(workspace.root);
   return {
     initialized: true,
@@ -146,10 +166,12 @@ export function getTiepointStatus(
       mcp_configs: mcpConfigs,
     },
     contract: {
-      documents: loaded.documents.length,
-      stories: stories.length,
-      acceptance_criteria: acceptanceCriteria.length,
+      documents: capabilities.length,
+      stories: storyCount,
+      acceptance_criteria: criterionCount,
       manifest_exists: manifestExists,
+      authored_inputs: authoredInputs,
+      counts_source: countsSource,
     },
     next_action: nextAction,
     onboarding,

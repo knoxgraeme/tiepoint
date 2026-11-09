@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import "./load-env.js";
+import { escapeTerminalText } from "./commands/shared.js";
 import { realpathSync } from "node:fs";
 import { resolve } from "node:path";
 import { createInterface } from "node:readline/promises";
@@ -103,7 +104,8 @@ export function renderStatus(status: TiepointStatus, ui: Palette): string {
     `  runtime: profile=${state(status.runtime.profile_present, "present", "missing")}, database=${status.runtime.database_mode}, embedding=${status.runtime.embedding_provider}, setup=${state(status.runtime.setup_complete, "complete", "incomplete")}`,
     `  optional capabilities: organization_matching=${state(status.capabilities.semantic_matching_configured, "configured", "not configured")}, planning_writes=${state(status.capabilities.planning_writes_configured, "configured", "not configured")}`,
     `  integration: mcp=${state(status.integration.mcp_clients.length > 0, status.integration.mcp_clients.join(", "), `not registered (rerun \`${ONBOARDING_SKILL_INSTALL_COMMAND}\`)`)}`,
-    `  contract: ${status.contract.stories} Stories, ${status.contract.acceptance_criteria} ACs, manifest=${state(status.contract.manifest_exists, "present", "missing")}`,
+    `  contract: ${status.contract.stories} Stories, ${status.contract.acceptance_criteria} ACs (${status.contract.counts_source}), manifest=${state(status.contract.manifest_exists, "present", "missing")}`,
+    `  authored inputs: ${status.contract.authored_inputs.status} — ${escapeTerminalText(status.contract.authored_inputs.detail)}`,
   ];
   if (status.onboarding) {
     lines.push(
